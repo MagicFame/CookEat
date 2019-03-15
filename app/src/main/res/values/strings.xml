@@ -5,5 +5,6 @@
     <string name="food">Food</string>
     <string name="searching">Search</string>
     <string name="searchtext">Search</string>
-    <string name="pref">Preferences</string>
+    <string name="pref">Pref</string>
+    <string name="logoText">logo</string>
 </resources>
