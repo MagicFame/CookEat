@@ -1,9 +1,11 @@
 package com.tilted.magicfame.cookeat;
 
+import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 
 import org.json.JSONArray;
@@ -25,37 +27,52 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        Button searchButton = findViewById(R.id.button);
+        searchButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                new FetchData().execute();
+            }
+        });
     }
 
-    protected void onClick(View v){
-        String research = ((EditText)(findViewById(R.id.editText2))).getText().toString();
 
-        HttpURLConnection urlConnection = null;
-        BufferedReader reader = null;
-        try {
-            String APIURL = "https://api.edamam.com/search?app_id=" + API_ID + "&app_key="
-                    + API_KEY + "&from=0&to=9&q=" + research;
-
-            URL url = new URL(APIURL);
-            System.out.println(url);
-            urlConnection = (HttpURLConnection) url.openConnection();
-            urlConnection.getInputStream();
+    class FetchData extends AsyncTask<Void, Void, String> {
 
 
-        } catch (IOException e) {
-            Log.e("PlaceholderFragment", "Error ", e);
+        protected void onPreExecute() {
+
         }
-        finally {
-            if (urlConnection != null) {
-                urlConnection.disconnect();
-            }
-            if (reader != null) {
-                try {
-                    reader.close();
-                } catch (final IOException e) {
-                    Log.e("PlaceholderFragment", "Error closing stream", e);
+
+        @Override
+        protected String doInBackground(Void... voids) {
+            String research = ((EditText) (findViewById(R.id.editText2))).getText().toString();
+
+            HttpURLConnection urlConnection = null;
+            BufferedReader reader = null;
+            try {
+                String APIURL = "https://api.edamam.com/search?app_id=" + API_ID + "&app_key="
+                        + API_KEY + "&from=0&to=9&q=" + research;
+
+                URL url = new URL(APIURL);
+                System.out.println(url);
+                urlConnection = (HttpURLConnection) url.openConnection();
+                InputStream inputStream = urlConnection.getInputStream();
+            } catch (IOException e) {
+                Log.e("PlaceholderFragment", "Error ", e);
+            } finally {
+                if (urlConnection != null) {
+                    urlConnection.disconnect();
+                }
+                if (reader != null) {
+                    try {
+                        reader.close();
+                    } catch (final IOException e) {
+                        Log.e("PlaceholderFragment", "Error closing stream", e);
+                    }
                 }
             }
+            return null;
         }
     }
 
