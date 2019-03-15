@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">Cookeat</string>
+    <string name="title">Welcome in Cookeat</string>
+    <string name="search">Recipe, ingredient</string>
+    <string name="food">Food</string>
+    <string name="searching">Search</string>
+    <string name="searchtext">Search</string>
+    <string name="pref">Preferences</string>
 </resources>
