@@ -1,10 +1,12 @@
 package com.tilted.magicfame.cookeat;
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -108,17 +110,26 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(MainActivity.this, "No more request available with the API!",
                             Toast.LENGTH_LONG).show();
                 }
-                System.out.println(number);
+                //System.out.println(number);
                 JSONArray jarray = JasonObject.getJSONArray("hits");
 
                 if(number > 0) {
                     for (int i = 0; i < number; i++) {
                         JSONObject jobject = jarray.getJSONObject(i).getJSONObject("recipe");
-                        Recipe r = new Recipe(jobject.getString("calories"), jobject.getString("label"), jobject.getString("image"));
+                        Recipe r = new Recipe(jobject.getString("uri"), jobject.getString("label"), jobject.getString("image"), jobject.getString("calories"));
                         recipes.add(r);
                     }
                     adapter = new CustomListAdapter(MainActivity.this, R.layout.item_listview, recipes);
                     listview.setAdapter(adapter);
+                    listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                            Intent intent = new Intent(MainActivity.this, DetailActivity.class);
+                            intent.putExtra("id", recipes.get(position).getId());
+                            startActivity(intent);
+                            System.out.println(recipes.get(position).getId());
+                        }
+                    });
                 }
             }catch (JSONException js) {
                 System.out.println(js.toString());

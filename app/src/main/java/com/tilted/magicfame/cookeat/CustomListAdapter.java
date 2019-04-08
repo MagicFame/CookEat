@@ -40,8 +40,7 @@ public class CustomListAdapter extends ArrayAdapter<Recipe> {
         Recipe recipe = getItem(position);
 
         holder.name.setText(recipe.getName());
-        holder.id.setText("Calories: " + Float.parseFloat(recipe.getId()));
-        System.out.println(recipe.getImageURL());
+        holder.id.setText("Calories: " + Float.parseFloat(recipe.getCalories()));
 
         Picasso.with(activity).load(recipe.getImageURL()).into(holder.image);
 
