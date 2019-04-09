@@ -66,7 +66,6 @@ public class MainActivity extends AppCompatActivity {
                         "&app_key=" + API_KEY + "&from=0";
 
                 URL url = new URL(APIURL);
-                System.out.println(url);
                 urlConnection = (HttpURLConnection) url.openConnection();
                 try {
                     BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
@@ -110,7 +109,6 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(MainActivity.this, "No more request available with the API!",
                             Toast.LENGTH_LONG).show();
                 }
-                //System.out.println(number);
                 JSONArray jarray = JasonObject.getJSONArray("hits");
 
                 if(number > 0) {

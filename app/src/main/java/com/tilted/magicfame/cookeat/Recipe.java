@@ -11,6 +11,7 @@ public class Recipe {
         this.name = name;
         this.imageURL = imageURL;
         this.calories = calories;
+        modifyID();
     }
 
     public String getCalories() {
@@ -42,5 +43,17 @@ public class Recipe {
 
     public void setImageURL(String imageURL) {
         this.imageURL = imageURL;
+    }
+
+    public void modifyID(){
+        int i = 0;
+        while(this.id.charAt(i) != '#'){
+            i++;
+        }
+        String premiere_partie = this.id.substring(0, i);
+        String seconde_partie = this.id.substring(i + 1, this.id.length());
+
+
+        this.id = premiere_partie + "%23" +  seconde_partie;
     }
 }
