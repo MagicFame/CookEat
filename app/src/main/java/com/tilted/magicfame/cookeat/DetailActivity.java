@@ -4,41 +4,49 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
+import android.widget.ImageView;
 import android.widget.TextView;
-
+import android.widget.Toast;
+import com.squareup.picasso.Picasso;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.sql.SQLOutput;
 
 public class DetailActivity extends AppCompatActivity {
 
     private String id = "";
     private TextView textView = null;
+    private ImageView imageView = null;
+    private TextView ingredientText = null;
+    private TextView calText = null;
+    private TextView fatText = null;
+    private TextView fiberText = null;
+    private TextView sugarText = null;
+    private TextView proteinText = null;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
         Intent intent = getIntent();
+        // get the parameter id for the good recipe
         if(intent != null){
             if(intent.hasExtra("id")){
                 id = intent.getStringExtra("id");
             }
-            textView = (TextView) findViewById(R.id.tv1);
-            textView.setText(id);
         }
         new FetchDetail().execute();
     }
 
+    // call API to get all details
     class FetchDetail extends AsyncTask<Void, Void, String>{
         private final static String API_KEY = "93e5b880b602c4df65119c7236a61fe7";
         private final static String API_ID = "71b510d1";
@@ -53,7 +61,7 @@ public class DetailActivity extends AppCompatActivity {
                     "&app_key=" + API_KEY + "&from=0";
             HttpURLConnection urlConnection = null;
             BufferedReader reader = null;
-            System.out.println(APIURL);
+           // System.out.println(APIURL);
             try{
                 URL url = new URL(APIURL);
                 urlConnection = (HttpURLConnection) url.openConnection();
@@ -85,15 +93,62 @@ public class DetailActivity extends AppCompatActivity {
             }
             return null;
         }
+
+        // Parse JSON data and print in the good textview
         @Override
         protected void onPostExecute(String s){
+            imageView = (ImageView) findViewById(R.id.picture);
             try{
                 JSONArray jarray = new JSONArray(result);
                 JSONObject jobject = jarray.getJSONObject(0);
+                textView = findViewById(R.id.tv1);
                 textView.setText(jobject.getString("label"));
+                Picasso.with(DetailActivity.this).load(jobject.getString("image")).into(imageView);
+                ingredientText = findViewById(R.id.ingredient);
+                JSONArray jarrayingredient = new JSONArray(jobject.getString("ingredientLines"));
+                String ingredient = "Ingredients :\n";
+                for(int i = 0; i < jarrayingredient.length(); i++){
+                    ingredient = ingredient + jarrayingredient.getString(i) + "\n";
+                }
+                ingredientText.setText(ingredient);
+                ingredientText.setMovementMethod(new ScrollingMovementMethod());
+                JSONObject jobjectApport = new JSONObject(jobject.getString("totalNutrients"));
+                String calories = "";
+                String fat = "";
+                String fiber = "";
+                String sugar = "";
+                String protein = "";
+                calories = new JSONObject(jobjectApport.getString("ENERC_KCAL")).getString("quantity");
+                fat = new JSONObject(jobjectApport.getString("FAT")).getString("quantity");
+                fiber = new JSONObject(jobjectApport.getString("FIBTG")).getString("quantity");
+                sugar = new JSONObject(jobjectApport.getString("SUGAR")).getString("quantity");
+                protein = new JSONObject(jobjectApport.getString("PROCNT")).getString("quantity");
+                calText = findViewById(R.id.cal);
+                fatText = findViewById(R.id.fat);
+                fiberText = findViewById(R.id.fib);
+                sugarText = findViewById(R.id.sugar);
+                proteinText = findViewById(R.id.prot);
+                modifyContent(calories, calText);
+                modifyContent(fat, fatText);
+                modifyContent(fiber, fiberText);
+                modifyContent(sugar, sugarText);
+                modifyContent(protein, proteinText);
+
 
             }catch (JSONException js){
                 System.out.println("Error parsing");
+                Toast.makeText(DetailActivity.this, "Error in data in the API call..",
+                        Toast.LENGTH_LONG).show();
+            }
+        }
+
+        // To reduce the number of decimal
+        public void modifyContent(String value, TextView textView){
+            try{
+                String new_value = String.format("%.2f", Float.parseFloat(value));
+                textView.setText(new_value);
+            }catch(Exception e){
+                System.out.println("Error converting" + e.getMessage());
             }
         }
 
